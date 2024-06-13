@@ -482,7 +482,7 @@ def test_preserve_line_breaks_with_maxcolwidths():
 
 def test_maxcolwidths_accepts_list_or_tuple():
     "Regression: maxcolwidths can accept a list or a tuple (github issue #214)"
-    table = [["lorem ipsum dolor sit amet"]*3]
+    table = [["lorem ipsum dolor sit amet"] * 3]
     expected = "\n".join(
         [
             "+-------------+----------+----------------------------+",
@@ -525,6 +525,7 @@ def test_numpy_int64_as_integer():
         assert expected == result
     except ImportError:
         raise skip("")
+
 
 def test_empty_table_with_colalign():
     "Regression: empty table with colalign kwarg"
