@@ -258,7 +258,7 @@ def test_alignment_of_decimal_numbers_with_commas():
     #    '+------+-----------+', '| c1r2 |    105.00 |',
     #    '+------+-----------+']
     # )
-    # assert_equal(expected, result)
+    # assert expected == result
 
 
 def test_long_integers():
@@ -495,10 +495,10 @@ def test_maxcolwidths_accepts_list_or_tuple():
     )
     # test with maxcolwidths as a list
     result = tabulate(table, tablefmt="grid", maxcolwidths=[12, 8])
-    assert_equal(expected, result)
+    assert expected == result
     # test with maxcolwidths as a tuple
     result = tabulate(table, tablefmt="grid", maxcolwidths=(12, 8))
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_exception_on_empty_data_with_maxcolwidths():
@@ -535,4 +535,4 @@ def test_empty_table_with_colalign():
             "---  ---  ---",
         ]
     )
-    assert_equal(expected, table)
+    assert expected == table
