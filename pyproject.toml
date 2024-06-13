@@ -3,7 +3,7 @@ requires = ["setuptools>=61.2.0", "setuptools_scm[toml]>=3.4.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tabulate"
+name = "tabulate2"
 authors = [{name = "Sergey Astanin", email = "s.astanin@gmail.com"}]
 license = {text = "MIT"}
 description = "Pretty-print tabular data"
@@ -21,10 +21,14 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
 ]
 requires-python = ">=3.7"
-dynamic = ["version"]
+version = "1.9.0"
+
+dependencies = [
+    "wcwidth >= 0.2.13"
+]
 
 [project.urls]
-Homepage = "https://github.com/astanin/python-tabulate"
+Homepage = "https://github.com/RaSan147/python-tabulate"
 
 [project.optional-dependencies]
 widechars = ["wcwidth"]

@@ -2,7 +2,7 @@ python-tabulate
 ===============
 
 Pretty-print tabular data in Python, a library and a command-line
-utility.
+utility. (This is a fork of https://github.com/astanin/python-tabulate)
 
 The main use cases of the library are:
 
@@ -20,7 +20,7 @@ Installation
 To install the Python library and the command line utility, run:
 
 ```shell
-pip install tabulate
+pip install tabulate2
 ```
 
 The command line utility will be installed as `tabulate` to `bin` on
@@ -30,7 +30,7 @@ Python installation on Windows (e.g. `C:\Python39\Scripts\tabulate.exe`).
 You may consider installing the library only for the current user:
 
 ```shell
-pip install tabulate --user
+pip install tabulate2 --user
 ```
 
 In this case the command line utility will be installed to
@@ -47,7 +47,7 @@ On Windows:
 
 ```shell
 set TABULATE_INSTALL=lib-only
-pip install tabulate
+pip install tabulate2
 ```
 
 Build status
