@@ -1,6 +1,6 @@
 """Tests of the internal tabulate functions."""
 
-import tabulate as T
+import tabulate2 as T
 
 from common import skip, rows_to_pipe_table_str, cols_to_pipe_str
 

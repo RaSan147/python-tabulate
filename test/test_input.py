@@ -1,6 +1,6 @@
 """Test support of the various forms of tabular data."""
 
-from tabulate import tabulate
+from tabulate2 import tabulate
 from common import raises, skip
 
 from collections import UserDict

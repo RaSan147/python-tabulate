@@ -1,7 +1,7 @@
 """Discretely test functionality of our custom TextWrapper"""
 import datetime
 
-from tabulate import _CustomTextWrap as CTW, tabulate
+from tabulate2 import _CustomTextWrap as CTW, tabulate
 from textwrap import TextWrapper as OTW
 
 from common import skip

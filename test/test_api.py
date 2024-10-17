@@ -2,7 +2,7 @@
 
 """
 
-from tabulate import tabulate, tabulate_formats, simple_separated_format
+from tabulate2 import tabulate, tabulate_formats, simple_separated_format
 from common import skip
 
 

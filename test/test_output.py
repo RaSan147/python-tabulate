@@ -2,9 +2,9 @@
 import textwrap
 from pytest import mark
 
-import tabulate as tabulate_module
+import tabulate2 as tabulate_module
 from common import raises, skip, check_warnings
-from tabulate import tabulate, simple_separated_format, SEPARATING_LINE
+from tabulate2 import tabulate, simple_separated_format, SEPARATING_LINE
 
 # _test_table shows
 #  - coercion of a string to a number,

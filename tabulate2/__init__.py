@@ -26,7 +26,10 @@ __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
 try:
     from .version import version as __version__  # noqa: F401
 except ImportError:
-    pass  # running __init__.py as a script, AppVeyor pytests
+    try:
+        from version import version as __version__ 
+    except ImportError:
+        pass  # running __init__.py as a script, AppVeyor pytests
 
 
 # minimum extra space in headers

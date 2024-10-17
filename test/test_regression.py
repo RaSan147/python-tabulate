@@ -1,6 +1,6 @@
 """Regression tests."""
 
-from tabulate import tabulate, TableFormat, Line, DataRow
+from tabulate2 import tabulate, TableFormat, Line, DataRow
 from common import skip
 
 
@@ -131,7 +131,7 @@ def test_datetime_values():
 
 def test_simple_separated_format():
     "Regression: simple_separated_format() accepts any separator (issue #12)"
-    from tabulate import simple_separated_format
+    from tabulate2 import simple_separated_format
 
     fmt = simple_separated_format("!")
     expected = "spam!eggs"
@@ -141,7 +141,7 @@ def test_simple_separated_format():
 
 def test_simple_separated_format_with_headers():
     "Regression: simple_separated_format() on tables with headers (issue #15)"
-    from tabulate import simple_separated_format
+    from tabulate2 import simple_separated_format
 
     expected = "  a|  b\n  1|  2"
     formatted = tabulate(
@@ -152,7 +152,7 @@ def test_simple_separated_format_with_headers():
 
 def test_column_type_of_bytestring_columns():
     "Regression: column type for columns of bytestrings (issue #16)"
-    from tabulate import _column_type
+    from tabulate2 import _column_type
 
     result = _column_type([b"foo", b"bar"])
     expected = bytes

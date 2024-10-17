@@ -21,7 +21,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
 ]
 requires-python = ">=3.7"
-version = "1.9.1"
+version = "1.9.2"
 
 dependencies = [
     "wcwidth >= 0.2.13"
@@ -45,10 +45,10 @@ dev = [
 ]
 
 [project.scripts]
-tabulate = "tabulate:_main"
+tabulate2 = "tabulate2:_main"
 
 [tool.setuptools]
-packages = ["tabulate"]
+packages = ["tabulate2"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"

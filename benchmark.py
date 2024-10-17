@@ -1,5 +1,5 @@
 from timeit import timeit
-import tabulate
+import tabulate2
 import asciitable
 import prettytable
 import texttable
@@ -62,9 +62,9 @@ methods = [
     ("join with tabs and newlines", "join_table(table)"),
     ("csv to StringIO", "csv_table(table)"),
     ("asciitable (%s)" % asciitable.__version__, "run_asciitable(table)"),
-    ("tabulate (%s)" % tabulate.__version__, "run_tabulate(table)"),
+    ("tabulate (%s)" % tabulate2.__version__, "run_tabulate(table)"),
     (
-        "tabulate (%s, WIDE_CHARS_MODE)" % tabulate.__version__,
+        "tabulate (%s, WIDE_CHARS_MODE)" % tabulate2.__version__,
         "run_tabulate(table, widechars=True)",
     ),
     ("PrettyTable (%s)" % prettytable.__version__, "run_prettytable(table)"),
@@ -72,7 +72,7 @@ methods = [
 ]
 
 
-if tabulate.wcwidth is None:
+if tabulate2.wcwidth is None:
     del methods[4]
 
 
@@ -88,7 +88,7 @@ def benchmark(n):
     results = [
         (desc, t, t / mintime) for desc, t in sorted(results, key=lambda x: x[1])
     ]
-    table = tabulate.tabulate(
+    table = tabulate2.tabulate(
         results, ["Table formatter", "time, μs", "rel. time"], "rst", floatfmt=".1f"
     )
 
