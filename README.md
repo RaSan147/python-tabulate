@@ -2,7 +2,7 @@ python-tabulate
 ===============
 
 Pretty-print tabular data in Python, a library and a command-line
-utility.
+utility. (This is a fork of https://github.com/astanin/python-tabulate)
 
 The main use cases of the library are:
 
@@ -20,7 +20,7 @@ Installation
 To install the Python library and the command line utility, run:
 
 ```shell
-pip install tabulate
+pip install tabulate2
 ```
 
 The command line utility will be installed as `tabulate` to `bin` on
@@ -30,7 +30,7 @@ Python installation on Windows (e.g. `C:\Python39\Scripts\tabulate.exe`).
 You may consider installing the library only for the current user:
 
 ```shell
-pip install tabulate --user
+pip install tabulate2 --user
 ```
 
 In this case the command line utility will be installed to
@@ -47,7 +47,7 @@ On Windows:
 
 ```shell
 set TABULATE_INSTALL=lib-only
-pip install tabulate
+pip install tabulate2
 ```
 
 Build status
@@ -233,8 +233,8 @@ bacon       0
 
 ```
 
-`github` follows the conventions of GitHub flavored Markdown. It
-corresponds to the `pipe` format without alignment colons:
+`github` follows the conventions of GitHub flavored Markdown. This
+format uses colons to indicate column alignment:
 
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="github"))
@@ -1061,6 +1061,31 @@ the lines being wrapped would probably be significantly longer than this.
 |            | Manager |
 +------------+---------+
 
+```
+
+Text is preferably wrapped on whitespaces and right after the hyphens in hyphenated words.
+
+break_long_words (default: True)  If true, then words longer than width will be broken in order to ensure that no lines are longer than width. 
+If it is false, long words will not be broken, and some lines may be longer than width.
+(Long words will be put on a line by themselves, in order to minimize the amount by which width is exceeded.)
+
+break_on_hyphens (default: True) If true, wrapping will occur preferably on whitespaces and right after hyphens in compound words, as it is customary in English. 
+If false, only whitespaces will be considered as potentially good places for line breaks.
+
+```pycon
+>>> print(tabulate([["John Smith", "Middle-Manager"]], headers=["Name", "Title"], tablefmt="grid", maxcolwidths=[None, 5], break_long_words=False))
++------------+---------+
+| Name       | Title   |
++============+=========+
+| John Smith | Middle- |
+|            | Manager |
++------------+---------+
+>>> print(tabulate([["John Smith", "Middle-Manager"]], headers=["Name", "Title"], tablefmt="grid", maxcolwidths=[None, 5], break_long_words=False, break_on_hyphens=False))
++------------+----------------+
+| Name       | Title          |
++============+================+
+| John Smith | Middle-Manager |
++------------+----------------+
 ```
 
 ### Adding Separating lines

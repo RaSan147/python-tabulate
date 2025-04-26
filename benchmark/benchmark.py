@@ -1,5 +1,5 @@
 from timeit import timeit
-import tabulate
+import tabulate2 as tabulate
 import prettytable
 import texttable
 import sys

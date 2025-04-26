@@ -1,9 +1,9 @@
 """Test output of the various forms of tabular data."""
-
+import textwrap
 from pytest import mark
 
 from common import assert_equal, raises, skip, check_warnings
-from tabulate import tabulate, simple_separated_format, SEPARATING_LINE
+from tabulate2 import tabulate, simple_separated_format, SEPARATING_LINE
 
 # _test_table shows
 #  - coercion of a string to a number,
@@ -243,6 +243,37 @@ def test_simple():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="simple")
+    assert_equal(expected, result)
+
+
+def test_simple_with_zero_padding():
+    """Output custom simple table built with a new column separator"""
+    expected = textwrap.dedent(
+        """\
+        strings numbers
+        eggs        451"""
+    )
+    result = tabulate(
+        [_test_table[-1]],
+        _test_table_headers,
+        tablefmt=simple_separated_format(" ", min_padding=0),
+    )
+    assert_equal(expected, result)
+
+
+def test_simple_with_zero_padding_and_alignment():
+    """Output custom simple table built with a new column separator"""
+    expected = textwrap.dedent(
+        """\
+        strings  numbers
+        spam     41.9999
+        eggs    451"""
+    )
+    result = tabulate(
+        _test_table,
+        _test_table_headers,
+        tablefmt=simple_separated_format(" ", min_padding=0),
+    )
     assert_equal(expected, result)
 
 
@@ -500,7 +531,7 @@ def test_github():
     expected = "\n".join(
         [
             "| strings   |   numbers |",
-            "|-----------|-----------|",
+            "| :-------- | --------: |",
             "| spam      |   41.9999 |",
             "| eggs      |  451      |",
         ]
@@ -2844,6 +2875,7 @@ def test_intfmt_with_colors():
         ]
     )
     print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
+    # assert expected == formatted
     assert_equal(expected, formatted)
 
 
@@ -2905,54 +2937,44 @@ def test_column_global_and_specific_alignment():
     colglobalalign = "center"
     colalign = ("global", "left", "right")
     result = tabulate(table, colglobalalign=colglobalalign, colalign=colalign)
-    expected = "\n".join(
-        [
-            "---  ---  ---  ---",
-            " 1   2      3   4",
-            "111  222  333  444",
-            "---  ---  ---  ---",
-        ]
-    )
+    expected = '\n'.join([
+        "---  ---  ---  ---",
+        " 1   2      3   4",
+        "111  222  333  444",
+        "---  ---  ---  ---"])
     assert_equal(expected, result)
 
 
 def test_headers_global_and_specific_alignment():
-    """Test `headersglobalalign` and `headersalign`."""
+    """ Test `headersglobalalign` and `headersalign`. """
     table = [[1, 2, 3, 4, 5, 6], [111, 222, 333, 444, 555, 666]]
-    colglobalalign = "center"
-    colalign = ("left",)
-    headers = ["h", "e", "a", "d", "e", "r"]
-    headersglobalalign = "right"
-    headersalign = ("same", "same", "left", "global", "center")
-    result = tabulate(
-        table,
-        headers=headers,
-        colglobalalign=colglobalalign,
-        colalign=colalign,
-        headersglobalalign=headersglobalalign,
-        headersalign=headersalign,
-    )
-    expected = "\n".join(
-        [
-            "h     e   a      d   e     r",
-            "---  ---  ---  ---  ---  ---",
-            "1     2    3    4    5    6",
-            "111  222  333  444  555  666",
-        ]
-    )
+    colglobalalign = 'center'
+    colalign = ('left',)
+    headers = ['h', 'e', 'a', 'd', 'e', 'r']
+    headersglobalalign = 'right'
+    headersalign = ('same', 'same', 'left', 'global', 'center')
+    result = tabulate(table, headers=headers, colglobalalign=colglobalalign, colalign=colalign, 
+                    headersglobalalign=headersglobalalign, headersalign=headersalign)
+    expected = '\n'.join([
+        "h     e   a      d   e     r",
+        "---  ---  ---  ---  ---  ---",
+        "1     2    3    4    5    6",
+        "111  222  333  444  555  666"])
     assert_equal(expected, result)
 
 
 def test_colalign_or_headersalign_too_long():
-    """Test `colalign` and `headersalign` too long."""
+    """ Test `colalign` and `headersalign` too long. """
     table = [[1, 2], [111, 222]]
-    colalign = ("global", "left", "center")
-    headers = ["h"]
-    headersalign = ("center", "right", "same")
-    result = tabulate(
-        table, headers=headers, colalign=colalign, headersalign=headersalign
-    )
-    expected = "\n".join(["      h", "---  ---", "  1  2", "111  222"])
+    colalign = ('global', 'left', 'center')
+    headers = ['h']
+    headersalign = ('center', 'right', 'same')
+    result = tabulate(table, headers=headers, colalign=colalign, headersalign=headersalign)
+    expected = '\n'.join([
+        "      h",
+        "---  ---",
+        "  1  2",
+        "111  222"])
     assert_equal(expected, result)
 
 
@@ -3300,5 +3322,36 @@ def test_preserve_whitespace():
     table_headers = ["h1", "h2", "h3"]
     test_table = [["  foo", " bar   ", "foo"]]
     expected = "\n".join(["h1    h2    h3", "----  ----  ----", "foo   bar   foo"])
-    result = tabulate(test_table, table_headers, preserve_whitespace=False)
+    result = tabulate(test_table, table_headers)
+    assert_equal(expected, result)
+
+
+def test_break_long_words():
+    "Output: Default table output, with breakwords true."
+    table_headers = ["h1", "h2", "h3"]
+    test_table = [["  foo1", " bar2   ", "foo3"]]
+
+    # Table is not wrapped on 3 letters due to long word
+    expected = "h1    h2    h3\n----  ----  ----\nfoo1  bar2  foo3"
+    result = tabulate(test_table, table_headers, maxcolwidths=3, break_long_words=False)
+    assert_equal(expected, result)
+
+    # Table max width is 3 letters
+    expected = "h1    h2    h3\n----  ----  ----\nf     ba    foo\noo1   r2    3"
+    result = tabulate(test_table, table_headers, maxcolwidths=3, break_long_words=True)
+    assert_equal(expected, result)
+
+
+def test_break_on_hyphens():
+    "Output: Default table output, with break on hyphens true."
+    table_headers = ["h1", "h2", "h3"]
+    test_table = [["  foo-bar", " bar-bar   ", "foo-foo"]]
+    # Table max width is 5, long lines breaks on hyphens
+    expected = "h1    h2    h3\n----  ----  -----\nfoo   bar-  foo-f\n-bar  bar   oo"
+    result = tabulate(test_table, table_headers, maxcolwidths=5, break_on_hyphens=False)
+    assert_equal(expected, result)
+
+    # Table data is no longer breaks on hyphens
+    expected = "h1    h2    h3\n----  ----  ----\nfoo-  bar-  foo-\nbar   bar   foo"
+    result = tabulate(test_table, table_headers, maxcolwidths=5, break_on_hyphens=True)
     assert_equal(expected, result)

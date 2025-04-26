@@ -2,10 +2,10 @@
 
 import datetime
 
-from tabulate import _CustomTextWrap as CTW, tabulate, _strip_ansi
+from tabulate2 import _CustomTextWrap as CTW, tabulate, _strip_ansi
 from textwrap import TextWrapper as OTW
 
-from common import skip, assert_equal
+from common import skip
 
 
 def test_wrap_multiword_non_wide():
@@ -57,7 +57,7 @@ def test_wrap_wide_char_multiword():
 
     wrapper = CTW(width=15)
     result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_wide_char_longword():
@@ -74,7 +74,7 @@ def test_wrap_wide_char_longword():
     # Explicit odd number to ensure the 2 width is taken into account
     wrapper = CTW(width=5)
     result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_mixed_string():
@@ -99,13 +99,13 @@ def test_wrap_mixed_string():
     ]
     wrapper = CTW(width=21)
     result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrapper_len_ignores_color_chars():
     data = "\033[31m\033[104mtenletters\033[0m"
     result = CTW._len(data)
-    assert_equal(10, result)
+    assert 10 == result
 
 
 def test_wrap_full_line_color():
@@ -122,7 +122,7 @@ def test_wrap_full_line_color():
     ]
     wrapper = CTW(width=20)
     result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_color_in_single_line():
@@ -138,7 +138,7 @@ def test_wrap_color_in_single_line():
     ]
     wrapper = CTW(width=25)
     result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_color_line_splillover():
@@ -155,7 +155,7 @@ def test_wrap_color_line_splillover():
     ]
     wrapper = CTW(width=25)
     result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_color_line_longword():
@@ -173,7 +173,7 @@ def test_wrap_color_line_longword():
     ]
     wrapper = CTW(width=12)
     result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_color_line_multiple_escapes():
@@ -184,14 +184,14 @@ def test_wrap_color_line_multiple_escapes():
     ]
     wrapper = CTW(width=10)
     result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    assert expected == result
 
     clean_data = _strip_ansi(data)
     for width in range(2, len(clean_data)):
         wrapper = CTW(width=width)
         result = wrapper.wrap(data)
         # Comparing after stripping ANSI should be enough to catch broken escape codes
-        assert_equal(clean_data, _strip_ansi("".join(result)))
+        assert clean_data == _strip_ansi("".join(result))
 
 
 def test_wrap_datetime():
@@ -219,7 +219,7 @@ def test_wrap_datetime():
         "+---------+--------+",
     ]
     expected = "\n".join(expected)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_none_value():
