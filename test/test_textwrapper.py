@@ -240,7 +240,7 @@ def test_wrap_none_value():
         "+---------+---------+",
     ]
     expected = "\n".join(expected)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_none_value_with_missingval():
@@ -263,4 +263,4 @@ def test_wrap_none_value_with_missingval():
         "+---------+---------+",
     ]
     expected = "\n".join(expected)
-    assert_equal(expected, result)
+    assert expected == result
