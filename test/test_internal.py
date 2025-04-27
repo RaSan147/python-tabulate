@@ -2,7 +2,7 @@
 
 import tabulate2 as T
 
-from common import skip, rows_to_pipe_table_str, cols_to_pipe_str
+from common import skip, rows_to_pipe_table_str, cols_to_pipe_str, assert_equal
 
 
 def test_multiline_width():
@@ -25,7 +25,7 @@ def test_align_column_decimal():
         "    1e+234 ",
         "    1.0e234",
     ]
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_align_column_decimal_with_thousand_separators():
@@ -40,7 +40,7 @@ def test_align_column_decimal_with_thousand_separators():
         "    1e+234 ",
         "    1.0e234",
     ]
-    assert expected == output
+    assert_equal(expected, output)
 
 
 def test_align_column_decimal_with_incorrect_thousand_separators():
@@ -55,7 +55,7 @@ def test_align_column_decimal_with_incorrect_thousand_separators():
         "      1e+234 ",
         "      1.0e234",
     ]
-    assert expected == output
+    assert_equal(expected, output)
 
 
 def test_align_column_none():
@@ -63,7 +63,7 @@ def test_align_column_none():
     column = ["123.4", "56.7890"]
     output = T._align_column(column, None)
     expected = ["123.4", "56.7890"]
-    assert expected == output
+    assert_equal(expected, output)
 
 
 def test_align_column_multiline():
@@ -71,7 +71,7 @@ def test_align_column_multiline():
     column = ["1", "123", "12345\n6"]
     output = T._align_column(column, "center", is_multiline=True)
     expected = ["  1  ", " 123 ", "12345" + "\n" + "  6  "]
-    assert expected == output
+    assert_equal(expected, output)
 
 
 def test_align_cell_veritically_one_line_only():
@@ -94,7 +94,7 @@ def test_align_cell_veritically_top_single_text_multiple_pad():
 
     expected = ["one line", "        ", "        "]
 
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_align_cell_veritically_center_single_text_multiple_pad():
@@ -103,7 +103,7 @@ def test_align_cell_veritically_center_single_text_multiple_pad():
 
     expected = ["        ", "one line", "        "]
 
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_align_cell_veritically_bottom_single_text_multiple_pad():
@@ -112,7 +112,7 @@ def test_align_cell_veritically_bottom_single_text_multiple_pad():
 
     expected = ["        ", "        ", "one line"]
 
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_align_cell_veritically_top_multi_text_multiple_pad():
@@ -122,7 +122,7 @@ def test_align_cell_veritically_top_multi_text_multiple_pad():
 
     expected = ["just", "one ", "cell", "    ", "    ", "    "]
 
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_align_cell_veritically_center_multi_text_multiple_pad():
@@ -134,7 +134,7 @@ def test_align_cell_veritically_center_multi_text_multiple_pad():
     # at top when required to do make a judgement
     expected = ["    ", "just", "one ", "cell", "    ", "    "]
 
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_align_cell_veritically_bottom_multi_text_multiple_pad():
@@ -144,7 +144,7 @@ def test_align_cell_veritically_bottom_multi_text_multiple_pad():
 
     expected = ["    ", "    ", "    ", "just", "one ", "cell"]
 
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrap_text_to_colwidths():
@@ -170,7 +170,7 @@ def test_wrap_text_to_colwidths():
     ]
     result = T._wrap_text_to_colwidths(rows, widths)
 
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrap_text_wide_chars():
@@ -190,7 +190,7 @@ def test_wrap_text_wide_chars():
     ]
     result = T._wrap_text_to_colwidths(rows, widths)
 
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrap_text_to_numbers():
@@ -207,7 +207,7 @@ def test_wrap_text_to_numbers():
     ]
 
     result = T._wrap_text_to_colwidths(rows, widths, numparses=[True, True, False])
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrap_text_to_colwidths_single_ansi_colors_full_cell():
@@ -234,7 +234,7 @@ def test_wrap_text_to_colwidths_single_ansi_colors_full_cell():
             )
         ]
     ]
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrap_text_to_colwidths_colors_wide_char():
@@ -258,7 +258,7 @@ def test_wrap_text_to_colwidths_colors_wide_char():
             )
         ]
     ]
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrap_text_to_colwidths_multi_ansi_colors_full_cell():
@@ -286,7 +286,7 @@ def test_wrap_text_to_colwidths_multi_ansi_colors_full_cell():
             )
         ]
     ]
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrap_text_to_colwidths_multi_ansi_colors_in_subset():
@@ -313,7 +313,7 @@ def test_wrap_text_to_colwidths_multi_ansi_colors_in_subset():
             )
         ]
     ]
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test__remove_separating_lines():

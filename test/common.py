@@ -3,10 +3,13 @@ from pytest import skip, raises  # noqa
 import warnings
 
 
-def assert_equal(expected, result):
+def assert_equal(expected, result, message=None):
     print("Expected:\n%r\n" % expected)
     print("Got:\n%r\n" % result)
-    assert expected == result
+    if message is not None:
+        assert expected == result, message
+    else:
+        assert expected == result
 
 
 def assert_in(result, expected_set):

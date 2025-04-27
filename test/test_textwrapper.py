@@ -5,7 +5,7 @@ import datetime
 from tabulate2 import _CustomTextWrap as CTW, tabulate, _strip_ansi
 from textwrap import TextWrapper as OTW
 
-from common import skip
+from common import skip, assert_equal
 
 
 def test_wrap_multiword_non_wide():
@@ -27,9 +27,11 @@ def test_wrap_multiword_non_wide_with_hypens():
         orig = OTW(width=width)
         cust = CTW(width=width)
 
-        assert orig.wrap(data) == cust.wrap(
-            data
-        ), "Failure on non-wide char hyphen regression check for width " + str(width)
+        assert_equal(
+            orig.wrap(data),
+            cust.wrap(data),
+            "Failure on non-wide char hyphen regression check for width " + str(width),
+        )
 
 
 def test_wrap_longword_non_wide():
@@ -39,9 +41,12 @@ def test_wrap_longword_non_wide():
         orig = OTW(width=width)
         cust = CTW(width=width)
 
-        assert orig.wrap(data) == cust.wrap(
-            data
-        ), "Failure on non-wide char longword regression check for width " + str(width)
+        assert_equal(
+            orig.wrap(data),
+            cust.wrap(data),
+            "Failure on non-wide char longword regression check for width "
+            + str(width),
+        )
 
 
 def test_wrap_wide_char_multiword():
@@ -57,7 +62,7 @@ def test_wrap_wide_char_multiword():
 
     wrapper = CTW(width=15)
     result = wrapper.wrap(data)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrap_wide_char_longword():
@@ -74,7 +79,7 @@ def test_wrap_wide_char_longword():
     # Explicit odd number to ensure the 2 width is taken into account
     wrapper = CTW(width=5)
     result = wrapper.wrap(data)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrap_mixed_string():
@@ -99,7 +104,7 @@ def test_wrap_mixed_string():
     ]
     wrapper = CTW(width=21)
     result = wrapper.wrap(data)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrapper_len_ignores_color_chars():
@@ -122,7 +127,7 @@ def test_wrap_full_line_color():
     ]
     wrapper = CTW(width=20)
     result = wrapper.wrap(data)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrap_color_in_single_line():
@@ -138,7 +143,7 @@ def test_wrap_color_in_single_line():
     ]
     wrapper = CTW(width=25)
     result = wrapper.wrap(data)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrap_color_line_splillover():
@@ -155,7 +160,7 @@ def test_wrap_color_line_splillover():
     ]
     wrapper = CTW(width=25)
     result = wrapper.wrap(data)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrap_color_line_longword():
@@ -173,7 +178,7 @@ def test_wrap_color_line_longword():
     ]
     wrapper = CTW(width=12)
     result = wrapper.wrap(data)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrap_color_line_multiple_escapes():
@@ -184,7 +189,7 @@ def test_wrap_color_line_multiple_escapes():
     ]
     wrapper = CTW(width=10)
     result = wrapper.wrap(data)
-    assert expected == result
+    assert_equal(expected, result)
 
     clean_data = _strip_ansi(data)
     for width in range(2, len(clean_data)):
@@ -219,7 +224,7 @@ def test_wrap_datetime():
         "+---------+--------+",
     ]
     expected = "\n".join(expected)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrap_none_value():
@@ -240,7 +245,7 @@ def test_wrap_none_value():
         "+---------+---------+",
     ]
     expected = "\n".join(expected)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_wrap_none_value_with_missingval():
@@ -263,4 +268,4 @@ def test_wrap_none_value_with_missingval():
         "+---------+---------+",
     ]
     expected = "\n".join(expected)
-    assert expected == result
+    assert_equal(expected, result)

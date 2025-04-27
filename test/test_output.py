@@ -528,6 +528,17 @@ def test_simple_multiline_with_empty_cells_headerless():
 
 def test_github():
     "Output: github with headers"
+    # expected = "\n".join(
+    #     [
+    #         "| strings   |   numbers |",
+    #         "|-----------|-----------|",
+    #         "| spam      |   41.9999 |",
+    #         "| eggs      |  451      |",
+    #     ]
+    # )
+    # result = tabulate(_test_table, _test_table_headers, tablefmt="github")
+    # assert_equal(expected, result)
+
     expected = "\n".join(
         [
             "| strings   |   numbers |",
@@ -536,7 +547,9 @@ def test_github():
             "| eggs      |  451      |",
         ]
     )
-    result = tabulate(_test_table, _test_table_headers, tablefmt="github")
+    result = tabulate(
+        _test_table, _test_table_headers, tablefmt="github"
+    )  # , colalign=["left", "right"])
     assert_equal(expected, result)
 
 
@@ -1521,9 +1534,9 @@ def test_colon_grid():
     expected = "\n".join(
         [
             "+------+------+",
-            "| H1   | H2   |",
+            "|   H1 |  H2  |",
             "+=====:+:====:+",
-            "| 3    | 4    |",
+            "|    3 |  4   |",
             "+------+------+",
         ]
     )
@@ -1547,11 +1560,11 @@ def test_colon_grid_wide_characters():
     expected = "\n".join(
         [
             "+-----------+---------+",
-            "| strings   | 配列    |",
+            "| strings   |    配列 |",
             "+:==========+========:+",
             "| spam      | 41.9999 |",
             "+-----------+---------+",
-            "| eggs      | 451     |",
+            "| eggs      |     451 |",
             "+-----------+---------+",
         ]
     )
@@ -1602,11 +1615,11 @@ def test_colon_grid_with_empty_cells():
     expected = "\n".join(
         [
             "+------+------+",
-            "| H1   | H2   |",
+            "|  H1  |   H2 |",
             "+:====:+=====:+",
-            "| A    |      |",
+            "|  A   |      |",
             "+------+------+",
-            "|      | B    |",
+            "|      |    B |",
             "+------+------+",
         ]
     )
@@ -2875,7 +2888,7 @@ def test_intfmt_with_colors():
         ]
     )
     print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
-    # assert expected == formatted
+    # assert_equal(expected, formatted)
     assert_equal(expected, formatted)
 
 
@@ -2937,44 +2950,54 @@ def test_column_global_and_specific_alignment():
     colglobalalign = "center"
     colalign = ("global", "left", "right")
     result = tabulate(table, colglobalalign=colglobalalign, colalign=colalign)
-    expected = '\n'.join([
-        "---  ---  ---  ---",
-        " 1   2      3   4",
-        "111  222  333  444",
-        "---  ---  ---  ---"])
+    expected = "\n".join(
+        [
+            "---  ---  ---  ---",
+            " 1   2      3   4",
+            "111  222  333  444",
+            "---  ---  ---  ---",
+        ]
+    )
     assert_equal(expected, result)
 
 
 def test_headers_global_and_specific_alignment():
-    """ Test `headersglobalalign` and `headersalign`. """
+    """Test `headersglobalalign` and `headersalign`."""
     table = [[1, 2, 3, 4, 5, 6], [111, 222, 333, 444, 555, 666]]
-    colglobalalign = 'center'
-    colalign = ('left',)
-    headers = ['h', 'e', 'a', 'd', 'e', 'r']
-    headersglobalalign = 'right'
-    headersalign = ('same', 'same', 'left', 'global', 'center')
-    result = tabulate(table, headers=headers, colglobalalign=colglobalalign, colalign=colalign, 
-                    headersglobalalign=headersglobalalign, headersalign=headersalign)
-    expected = '\n'.join([
-        "h     e   a      d   e     r",
-        "---  ---  ---  ---  ---  ---",
-        "1     2    3    4    5    6",
-        "111  222  333  444  555  666"])
+    colglobalalign = "center"
+    colalign = ("left",)
+    headers = ["h", "e", "a", "d", "e", "r"]
+    headersglobalalign = "right"
+    headersalign = ("same", "same", "left", "global", "center")
+    result = tabulate(
+        table,
+        headers=headers,
+        colglobalalign=colglobalalign,
+        colalign=colalign,
+        headersglobalalign=headersglobalalign,
+        headersalign=headersalign,
+    )
+    expected = "\n".join(
+        [
+            "h     e   a      d   e     r",
+            "---  ---  ---  ---  ---  ---",
+            "1     2    3    4    5    6",
+            "111  222  333  444  555  666",
+        ]
+    )
     assert_equal(expected, result)
 
 
 def test_colalign_or_headersalign_too_long():
-    """ Test `colalign` and `headersalign` too long. """
+    """Test `colalign` and `headersalign` too long."""
     table = [[1, 2], [111, 222]]
-    colalign = ('global', 'left', 'center')
-    headers = ['h']
-    headersalign = ('center', 'right', 'same')
-    result = tabulate(table, headers=headers, colalign=colalign, headersalign=headersalign)
-    expected = '\n'.join([
-        "      h",
-        "---  ---",
-        "  1  2",
-        "111  222"])
+    colalign = ("global", "left", "center")
+    headers = ["h"]
+    headersalign = ("center", "right", "same")
+    result = tabulate(
+        table, headers=headers, colalign=colalign, headersalign=headersalign
+    )
+    expected = "\n".join(["      h", "---  ---", "  1  2", "111  222"])
     assert_equal(expected, result)
 
 

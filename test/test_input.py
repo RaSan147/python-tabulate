@@ -1,7 +1,7 @@
 """Test support of the various forms of tabular data."""
 
 from tabulate2 import tabulate
-from common import raises, skip
+from common import assert_equal, raises, skip
 
 from collections import UserDict
 
@@ -13,7 +13,7 @@ def test_iterable_of_iterables():
         ["-  -  -  -  -", "0  1  2  3  4", "5  4  3  2  1", "-  -  -  -  -"]
     )
     result = tabulate(ii)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_iterable_of_iterables_headers():
@@ -28,7 +28,7 @@ def test_iterable_of_iterables_headers():
         ]
     )
     result = tabulate(ii, "abcde")
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_iterable_of_iterables_firstrow():
@@ -43,7 +43,7 @@ def test_iterable_of_iterables_firstrow():
         ]
     )
     result = tabulate(ii, "firstrow")
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_list_of_lists():
@@ -58,7 +58,7 @@ def test_list_of_lists():
         ]
     )
     result = tabulate(ll, headers=["string", "number"])
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_list_of_lists_firstrow():
@@ -73,7 +73,7 @@ def test_list_of_lists_firstrow():
         ]
     )
     result = tabulate(ll, headers="firstrow")
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_list_of_lists_keys():
@@ -83,7 +83,7 @@ def test_list_of_lists_keys():
         ["0    1      2", "---  ---  ---", "a    one    1", "b    two"]
     )
     result = tabulate(ll, headers="keys")
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_dict_like():
@@ -118,7 +118,7 @@ def test_numpy_2d():
             ]
         )
         result = tabulate(na, ["a", "b", "c"])
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         skip("test_numpy_2d is skipped")
 
@@ -133,7 +133,7 @@ def test_numpy_2d_firstrow():
             ["  1    8    27", "---  ---  ----", " 64  125   216", "343  512   729"]
         )
         result = tabulate(na, headers="firstrow")
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         skip("test_numpy_2d_firstrow is skipped")
 
@@ -154,7 +154,7 @@ def test_numpy_2d_keys():
             ]
         )
         result = tabulate(na, headers="keys")
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         skip("test_numpy_2d_keys is skipped")
 
@@ -180,7 +180,7 @@ def test_numpy_record_array():
             ]
         )
         result = tabulate(na)
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         skip("test_numpy_2d_keys is skipped")
 
@@ -206,7 +206,7 @@ def test_numpy_record_array_keys():
             ]
         )
         result = tabulate(na, headers="keys")
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         skip("test_numpy_2d_keys is skipped")
 
@@ -232,7 +232,7 @@ def test_numpy_record_array_headers():
             ]
         )
         result = tabulate(na, headers=["person", "years", "cm"])
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         skip("test_numpy_2d_keys is skipped")
 
@@ -252,7 +252,7 @@ def test_pandas():
             ]
         )
         result = tabulate(df, headers=["string", "number"])
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         skip("test_pandas is skipped")
 
@@ -269,7 +269,7 @@ def test_pandas_firstrow():
             ["a    one      1.0", "---  -----  -----", "b    two      nan"]
         )
         result = tabulate(df, headers="firstrow")
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         skip("test_pandas_firstrow is skipped")
 
@@ -291,7 +291,7 @@ def test_pandas_keys():
             ]
         )
         result = tabulate(df, headers="keys")
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         skip("test_pandas_keys is skipped")
 
@@ -313,7 +313,7 @@ whom      how old    how tall
 ------  ---------  ----------
 Alice          23       169.5
 Bob            27       175"""
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         skip("test_sqlite3 is skipped")
 
@@ -337,7 +337,7 @@ whom      how old    how tall
 ------  ---------  ----------
 Alice          23       169.5
 Bob            27       175"""
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         skip("test_sqlite3_keys is skipped")
 
@@ -350,7 +350,7 @@ def test_list_of_namedtuples():
     lt = [NT(1, 2), NT(3, 4)]
     expected = "\n".join(["-  -", "1  2", "3  4", "-  -"])
     result = tabulate(lt)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_list_of_namedtuples_keys():
@@ -363,7 +363,7 @@ def test_list_of_namedtuples_keys():
         ["  foo    bar", "-----  -----", "    1      2", "    3      4"]
     )
     result = tabulate(lt, headers="keys")
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_list_of_dicts():
@@ -423,7 +423,7 @@ def test_list_of_dicts_with_missing_keys():
         ]
     )
     result = tabulate(lod, headers="keys")
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_list_of_dicts_firstrow():
@@ -470,7 +470,7 @@ def test_list_of_ordereddicts():
     lod = [od, od]
     expected = "\n".join(["  b    a", "---  ---", "  1    2", "  1    2"])
     result = tabulate(lod, headers="keys")
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_py37orlater_list_of_dataclasses_keys():
@@ -489,7 +489,7 @@ def test_py37orlater_list_of_dataclasses_keys():
                 "Bob        27     175",
             ]
         )
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         skip("test_py37orlater_list_of_dataclasses_keys is skipped")
 
@@ -510,7 +510,7 @@ def test_py37orlater_list_of_dataclasses_headers():
                 "Bob            27  175",
             ]
         )
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         skip("test_py37orlater_list_of_dataclasses_headers is skipped")
 
@@ -522,4 +522,4 @@ def test_list_bytes():
         ["bytes", "---------------------------", r"b'\xe4\xbd\xa0\xe5\xa5\xbd'", "你好"]
     )
     result = tabulate(lb, headers=["bytes"])
-    assert expected == result
+    assert_equal(expected, result)

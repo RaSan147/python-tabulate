@@ -13,6 +13,15 @@ import textwrap
 import dataclasses
 import sys
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def lprint(*args, **kwargs):
+    logger.debug(" ".join(map(str, args)), **kwargs)
+
+
 try:
     import wcwidth  # optional wide-character (CJK) support
 except ImportError:
@@ -28,10 +37,10 @@ try:
     from .version import version as __version__  # noqa: F401
 except ImportError:
     try:
-        from version import version as __version__ 
+        from version import version as __version__
     except ImportError:
         pass  # running __init__.py as a script, AppVeyor pytests
-
+__version__ = __version__
 
 # minimum extra space in headers
 MIN_PADDING = 2
@@ -1688,7 +1697,14 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     return rows, headers, headers_pad
 
 
-def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True, missingval=_DEFAULT_MISSINGVAL, break_long_words=_BREAK_LONG_WORDS, break_on_hyphens=_BREAK_ON_HYPHENS):
+def _wrap_text_to_colwidths(
+    list_of_lists,
+    colwidths,
+    numparses=True,
+    missingval=_DEFAULT_MISSINGVAL,
+    break_long_words=_BREAK_LONG_WORDS,
+    break_on_hyphens=_BREAK_ON_HYPHENS,
+):
     if len(list_of_lists):
         num_cols = len(list_of_lists[0])
     else:
@@ -1705,12 +1721,20 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True, missingval
                 continue
 
             if width is not None:
-                wrapper = _CustomTextWrap(width=width, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens)
+                wrapper = _CustomTextWrap(
+                    width=width,
+                    break_long_words=break_long_words,
+                    break_on_hyphens=break_on_hyphens,
+                )
                 # Cast based on our internal type handling
                 # Any future custom formatting of types (such as datetimes)
                 # may need to be more explicit than just `str` of the object
                 casted_cell = (
-                    missingval if cell is None else str(cell) if _isnumber(cell) else _type(cell, numparse)(cell)
+                    missingval
+                    if cell is None
+                    else str(cell)
+                    if _isnumber(cell)
+                    else _type(cell, numparse)(cell)
                 )
                 wrapped = [
                     "\n".join(wrapper.wrap(line))
@@ -2316,7 +2340,12 @@ def tabulate(
 
         numparses = _expand_numparse(disable_numparse, num_cols)
         list_of_lists = _wrap_text_to_colwidths(
-            list_of_lists, maxcolwidths, numparses=numparses, missingval=missingval, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens
+            list_of_lists,
+            maxcolwidths,
+            numparses=numparses,
+            missingval=missingval,
+            break_long_words=break_long_words,
+            break_on_hyphens=break_on_hyphens,
         )
 
     if maxheadercolwidths is not None:
@@ -2330,7 +2359,12 @@ def tabulate(
 
         numparses = _expand_numparse(disable_numparse, num_cols)
         headers = _wrap_text_to_colwidths(
-            [headers], maxheadercolwidths, numparses=numparses, missingval=missingval, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens
+            [headers],
+            maxheadercolwidths,
+            numparses=numparses,
+            missingval=missingval,
+            break_long_words=break_long_words,
+            break_on_hyphens=break_on_hyphens,
         )[0]
 
     # empty values in the first column of RST tables should be escaped (issue #82)
@@ -2767,56 +2801,105 @@ class _CustomTextWrap(textwrap.TextWrapper):
         lines.append(new_line)
 
     def _handle_long_word(self, reversed_chunks, cur_line, cur_len, width):
-        """_handle_long_word(chunks : [string],
-                             cur_line : [string],
-                             cur_len : int, width : int)
-        Handle a chunk of text (most likely a word, not whitespace) that
-        is too long to fit in any line.
-        """
-        # Figure out when indent is larger than the specified width, and make
-        # sure at least one character is stripped off on every pass
         if width < 1:
             space_left = 1
         else:
             space_left = width - cur_len
 
-        # If we're allowed to break long words, then do so: put as much
-        # of the next chunk onto the current line as will fit.
-        if self.break_long_words:
-            # Tabulate Custom: Build the string up piece-by-piece in order to
-            # take each charcter's width into account
-            chunk = reversed_chunks[-1]
-            i = 1
-            # Only count printable characters, so strip_ansi first, index later.
-            while len(_strip_ansi(chunk)[:i]) <= space_left:
-                i = i + 1
-            # Consider escape codes when breaking words up
-            total_escape_len = 0
-            last_group = 0
-            if _ansi_codes.search(chunk) is not None:
-                for group, _, _, _ in _ansi_codes.findall(chunk):
-                    escape_len = len(group)
-                    if (
-                        group
-                        in chunk[last_group : i + total_escape_len + escape_len - 1]
-                    ):
-                        total_escape_len += escape_len
-                        found = _ansi_codes.search(chunk[last_group:])
-                        last_group += found.end()
-            cur_line.append(chunk[: i + total_escape_len - 1])
-            reversed_chunks[-1] = chunk[i + total_escape_len - 1 :]
+        chunk = reversed_chunks[-1]
+        stripped = _strip_ansi(chunk)
 
-        # Otherwise, we have to preserve the long word intact.  Only add
-        # it to the current line if there's nothing already there --
-        # that minimizes how much we violate the width constraint.
+        # 1) First, try to break on a hyphen if allowed (mimic TextWrapper)
+        if (
+            self.break_long_words
+            and self.break_on_hyphens
+            and len(stripped) > space_left
+        ):
+            hyphen = stripped.rfind("-", 0, space_left)
+            if hyphen > 0 and any(c != "-" for c in stripped[:hyphen]):
+                # find the index in the original chunk that corresponds
+                # to the (hyphen+1)th printable character
+                printable = 0
+                idx = 0
+                in_escape = False
+                while idx < len(chunk) and printable <= hyphen:
+                    c = chunk[idx]
+                    if in_escape:
+                        if c == "m":
+                            in_escape = False
+                        idx += 1
+                        continue
+                    if c == "\x1b" and idx + 1 < len(chunk) and chunk[idx + 1] == "[":
+                        in_escape = True
+                        idx += 2
+                        continue
+                    # real printable char
+                    printable += 1
+                    idx += 1
+
+                split_at = idx  # break *after* that hyphen
+                cur_line.append(chunk[:split_at])
+                reversed_chunks[-1] = chunk[split_at:]
+                return
+
+        # 2) Fallback to width‐based split (with ANSI‐aware counting)
+        if self.break_long_words:
+            # exactly your previous logic:
+            _part = stripped
+            visible = 0
+            max_i = 0
+            for i, ch in enumerate(_part):
+                w = wcwidth.wcwidth(ch)
+                if w < 0:
+                    w = 0
+                if visible + w > space_left:
+                    break
+                visible += w
+                max_i = i + 1
+
+            # now step through the original chunk to include escape codes
+            total_escape = 0
+            pos = 0
+            in_escape = False
+            while pos < len(chunk) and pos < max_i + total_escape:
+                if in_escape:
+                    if chunk[pos] == "m":
+                        in_escape = False
+                    total_escape += 1
+                    pos += 1
+                elif (
+                    chunk[pos] == "\x1b"
+                    and pos + 1 < len(chunk)
+                    and chunk[pos + 1] == "["
+                ):
+                    in_escape = True
+                    total_escape += 2
+                    pos += 2
+                else:
+                    pos += 1
+
+            split_at = max_i + total_escape
+            # ensure we don't split an escape in half
+            while (
+                split_at < len(chunk)
+                and chunk[split_at] == "\x1b"
+                and split_at + 1 < len(chunk)
+                and chunk[split_at + 1] == "["
+            ):
+                # skip full escape
+                end = split_at + 2
+                while end < len(chunk) and chunk[end] != "m":
+                    end += 1
+                if end < len(chunk):
+                    end += 1
+                split_at = end
+
+            cur_line.append(chunk[:split_at])
+            reversed_chunks[-1] = chunk[split_at:]
+
+        # 3) If we’re not allowed to break, but cur_line is empty, force the whole chunk
         elif not cur_line:
             cur_line.append(reversed_chunks.pop())
-
-        # If we're not allowed to break long words, and there's already
-        # text on the current line, do nothing.  Next time through the
-        # main loop of _wrap_chunks(), we'll wind up here again, but
-        # cur_len will be zero, so the next line will be entirely
-        # devoted to the long word that we can't handle right now.
 
     def _wrap_chunks(self, chunks):
         """_wrap_chunks(chunks : [string]) -> [string]
