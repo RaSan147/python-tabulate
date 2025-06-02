@@ -7,7 +7,7 @@ import sys
 setup_code = r"""
 from csv import writer
 from io import StringIO
-import tabulate
+import tabulate2 as tabulate
 import prettytable
 import texttable
 
