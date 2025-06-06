@@ -2806,100 +2806,52 @@ class _CustomTextWrap(textwrap.TextWrapper):
         else:
             space_left = width - cur_len
 
+        if not self.break_long_words:
+            if not cur_line:
+                cur_line.append(reversed_chunks.pop())
+            return
+
         chunk = reversed_chunks[-1]
-        stripped = _strip_ansi(chunk)
+        n = len(chunk)
+        
+        # Precompute all escape sequences in one pass
+        escapes = []
+        for match in _ansi_codes.finditer(chunk):
+            escapes.append((match.start(), match.end()))
+        escape_index = 0
+        
+        current_width = 0
+        raw_index = 0
 
-        # 1) First, try to break on a hyphen if allowed (mimic TextWrapper)
-        if (
-            self.break_long_words
-            and self.break_on_hyphens
-            and len(stripped) > space_left
-        ):
-            hyphen = stripped.rfind("-", 0, space_left)
-            if hyphen > 0 and any(c != "-" for c in stripped[:hyphen]):
-                # find the index in the original chunk that corresponds
-                # to the (hyphen+1)th printable character
-                printable = 0
-                idx = 0
-                in_escape = False
-                while idx < len(chunk) and printable <= hyphen:
-                    c = chunk[idx]
-                    if in_escape:
-                        if c == "m":
-                            in_escape = False
-                        idx += 1
-                        continue
-                    if c == "\x1b" and idx + 1 < len(chunk) and chunk[idx + 1] == "[":
-                        in_escape = True
-                        idx += 2
-                        continue
-                    # real printable char
-                    printable += 1
-                    idx += 1
+        # Traverse the chunk while tracking visible width
+        while raw_index < n:
+            # Skip escape sequences first
+            if escape_index < len(escapes) and raw_index == escapes[escape_index][0]:
+                raw_index = escapes[escape_index][1]
+                escape_index += 1
+                continue
+                
+            char = chunk[raw_index]
+            if wcwidth:
+                char_width = wcwidth.wcwidth(char)
+                if char_width < 0:
+                    char_width = 0
+            else:
+                char_width = 1
+                
+            # Stop before exceeding available space
+            if current_width + char_width > space_left:
+                break
+                
+            current_width += char_width
+            raw_index += 1
 
-                split_at = idx  # break *after* that hyphen
-                cur_line.append(chunk[:split_at])
-                reversed_chunks[-1] = chunk[split_at:]
-                return
-
-        # 2) Fallback to width‐based split (with ANSI‐aware counting)
-        if self.break_long_words:
-            # exactly your previous logic:
-            _part = stripped
-            visible = 0
-            max_i = 0
-            for i, ch in enumerate(_part):
-                w = wcwidth.wcwidth(ch)
-                if w < 0:
-                    w = 0
-                if visible + w > space_left:
-                    break
-                visible += w
-                max_i = i + 1
-
-            # now step through the original chunk to include escape codes
-            total_escape = 0
-            pos = 0
-            in_escape = False
-            while pos < len(chunk) and pos < max_i + total_escape:
-                if in_escape:
-                    if chunk[pos] == "m":
-                        in_escape = False
-                    total_escape += 1
-                    pos += 1
-                elif (
-                    chunk[pos] == "\x1b"
-                    and pos + 1 < len(chunk)
-                    and chunk[pos + 1] == "["
-                ):
-                    in_escape = True
-                    total_escape += 2
-                    pos += 2
-                else:
-                    pos += 1
-
-            split_at = max_i + total_escape
-            # ensure we don't split an escape in half
-            while (
-                split_at < len(chunk)
-                and chunk[split_at] == "\x1b"
-                and split_at + 1 < len(chunk)
-                and chunk[split_at + 1] == "["
-            ):
-                # skip full escape
-                end = split_at + 2
-                while end < len(chunk) and chunk[end] != "m":
-                    end += 1
-                if end < len(chunk):
-                    end += 1
-                split_at = end
-
-            cur_line.append(chunk[:split_at])
-            reversed_chunks[-1] = chunk[split_at:]
-
-        # 3) If we’re not allowed to break, but cur_line is empty, force the whole chunk
-        elif not cur_line:
-            cur_line.append(reversed_chunks.pop())
+        # Split the chunk at the calculated break point
+        part1 = chunk[:raw_index]
+        part2 = chunk[raw_index:]
+        
+        cur_line.append(part1)
+        reversed_chunks[-1] = part2
 
     def _wrap_chunks(self, chunks):
         """_wrap_chunks(chunks : [string]) -> [string]

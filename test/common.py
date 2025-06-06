@@ -3,9 +3,22 @@ from pytest import skip, raises  # noqa
 import warnings
 
 
+def pretty_print(*args):
+    # takes a string, splits it into lines, and prints each line as repr
+    for arg in args:
+        if isinstance(arg, str):
+            lines = arg.splitlines()
+            for line in lines:
+                print(repr(line))
+        else:
+            print(repr(arg))
+
+
 def assert_equal(expected, result, message=None):
-    print("Expected:\n%r\n" % expected)
-    print("Got:\n%r\n" % result)
+    print("Expected:\n")
+    pretty_print(expected)
+    print("Got:\n")
+    pretty_print(result)
     if message is not None:
         assert expected == result, message
     else:

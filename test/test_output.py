@@ -411,13 +411,13 @@ def test_simple_headerless_with_sep_line_with_padding_in_tablefmt():
     "Output: simple without headers with sep line with padding in tablefmt"
     expected = "\n".join(
         [
-            "|------|----------|",
+            "| :--- | -------: |",
             "| spam |  41.9999 |",
-            "|------|----------|",
+            "| :--- | -------: |",
             "| eggs | 451      |",
         ]
     )
-    result = tabulate(_test_table_with_sep_line, tablefmt="github")
+    result = tabulate(_test_table_with_sep_line, tablefmt="github", headers=[])
     assert_equal(expected, result)
 
 
@@ -1578,11 +1578,11 @@ def test_colon_grid_headerless():
     "Output: colon_grid without headers"
     expected = "\n".join(
         [
-            "+------+---------+",
-            "| spam | 41.9999 |",
-            "+------+---------+",
-            "| eggs | 451     |",
-            "+------+---------+",
+            "+------+----------+",
+            "| spam |  41.9999 |",
+            "+------+----------+",
+            "| eggs | 451      |",
+            "+------+----------+",
         ]
     )
     result = tabulate(_test_table, tablefmt="colon_grid")
