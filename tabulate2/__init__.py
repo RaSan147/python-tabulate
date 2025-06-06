@@ -2813,13 +2813,13 @@ class _CustomTextWrap(textwrap.TextWrapper):
 
         chunk = reversed_chunks[-1]
         n = len(chunk)
-        
+
         # Precompute all escape sequences in one pass
         escapes = []
         for match in _ansi_codes.finditer(chunk):
             escapes.append((match.start(), match.end()))
         escape_index = 0
-        
+
         current_width = 0
         raw_index = 0
 
@@ -2830,7 +2830,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
                 raw_index = escapes[escape_index][1]
                 escape_index += 1
                 continue
-                
+
             char = chunk[raw_index]
             if wcwidth:
                 char_width = wcwidth.wcwidth(char)
@@ -2838,18 +2838,18 @@ class _CustomTextWrap(textwrap.TextWrapper):
                     char_width = 0
             else:
                 char_width = 1
-                
+
             # Stop before exceeding available space
             if current_width + char_width > space_left:
                 break
-                
+
             current_width += char_width
             raw_index += 1
 
         # Split the chunk at the calculated break point
         part1 = chunk[:raw_index]
         part2 = chunk[raw_index:]
-        
+
         cur_line.append(part1)
         reversed_chunks[-1] = part2
 
