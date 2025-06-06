@@ -1731,7 +1731,7 @@ def _wrap_text_to_colwidths(
                 # may need to be more explicit than just `str` of the object
                 casted_cell = (
                     missingval
-                    if cell is None
+                    if (cell is None or (isinstance(cell, (str, bytes)) and not cell))
                     else str(cell)
                     if _isnumber(cell)
                     else _type(cell, numparse)(cell)
